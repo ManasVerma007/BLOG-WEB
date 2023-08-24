@@ -24,18 +24,19 @@ router.post("/signin", async (req, res) => {
   }
 });
 
+router.get("/logout", (req, res) => {
+  res.clearCookie("token").redirect("/");
+});
+
 router.post("/signup", async (req, res) => {
-  const { fullName, email, password } = req.body;
+  const { fullname, email, password } = req.body;
+  console.log(fullname)
   await User.create({
-    fullName,
+    fullname,
     email,
     password,
   });
   return res.redirect("/");
-});
-
-router.get("/logout", (req, res) => {
-  res.clearCookie("token").redirect("/");
 });
 
 module.exports = router;

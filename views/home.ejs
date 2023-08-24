@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <%- include('./partials/head') %>
-    <title>Homepage</title>
-  </head>
-  <body>
-    <%- include('./partials/nav') %>
+<head>
+  <%- include('./partials/head') %>
+  <title>Homepage</title>
+</head>
+<body class="bg-dark text-light">
 
-    <div class="container mt-3">
-      <div class="row row-cols-4">
-        <% blogs.forEach(blog => { %>
-        <div class="col">
-          <div class="card col" style="width: 18rem">
-            <img src="<%= blog.coverImageURL %>" class="card-img-top" />
-            <div class="card-body">
-              <h5 class="card-title"><%= blog.title %></h5>
-              <a href="/blog/<%= blog._id %>" class="btn btn-primary">View</a>
-            </div>
+  <%- include('./partials/nav') %>
+
+  <div class="container mt-4">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <% blogs.forEach(blog => { %>
+      <div class="col">
+        <div class="card bg-body-tertiary text-dark">
+          <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="<%= blog.title %> Cover Image" />
+          <div class="card-body">
+            <h5 class="card-title"><%= blog.title %></h5>
+            <a href="/blog/<%= blog._id %>" class="btn btn-primary">View</a>
           </div>
         </div>
-        <% }) %>
       </div>
+      <% }) %>
     </div>
+  </div>
 
-    <%- include('./partials/scripts') %>
-  </body>
+  <%- include('./partials/scripts') %>
+</body>
 </html>
