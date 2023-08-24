@@ -43,7 +43,7 @@ router.post("/comment/:blogId", async (req, res) => {
     blogId: req.params.blogId,
     createdBy: req.user._id,
   });
-  return res.redirect(`/blog/${req.params.blogId}`);
+  return res.redirect(`/blog/x/${req.params.blogId}`);
 });
 
 router.post("/", upload.single("coverImage"), async (req, res) => {
@@ -54,7 +54,48 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
     createdBy: req.user._id,
     coverImageURL: `/uploads/${req.file.filename}`,
   });
-  return res.redirect(`/blog/${blog._id}`);
+  return res.redirect(`/blog/x/${blog._id}`);
 });
+
+router.get("/:id/edit", async (req, res) => {
+  const blog = await Blog.findById(req.params.id);
+  return res.render("editBlog", {
+    user: req.user,
+    blog,
+  });
+});
+
+
+router.post("/:id/edit", upload.single("coverImage"), async (req, res) => {
+  const { title, body } = req.body;
+  const updatedFields = {
+    title,
+    body,
+  };
+
+  if (req.file) {
+    updatedFields.coverImageURL = `/uploads/${req.file.filename}`;
+  }
+
+  await Blog.findByIdAndUpdate(req.params.id, updatedFields);
+  return res.redirect(`/blog/x/${req.params.id}`);
+});
+
+
+router.get("/myblogs/one", async (req, res) => {
+  try {
+    const userBlogs = await Blog.find({ createdBy: req.user._id }).populate("createdBy");
+    return res.render("myBlogs", {
+      user: req.user,
+      blogs: userBlogs,
+    });
+  } catch (error) {
+
+    console.error("Error fetching user's blogs:", error);
+    return res.status(500).send("Internal Server Error");
+ }
+
+});
+
 
 module.exports = router;

@@ -16,7 +16,7 @@ router.post("/signin", async (req, res) => {
   try {
     const token = await User.matchPasswordAndGenerateToken(email, password);
 
-    return res.cookie("token", token).redirect("/");
+    return res.cookie("token", token).redirect("/blog/x/myblogs/one");
   } catch (error) {
     return res.render("signin", {
       error: "Incorrect Email or Password",

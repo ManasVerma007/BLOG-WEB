@@ -35,5 +35,5 @@ app.get("/", async (req, res) => {
 
 app.use(express.urlencoded({ extended: false }));
 app.use("/user", userRoute);
-app.use("/blog", blogRoute);
+app.use("/blog/x", blogRoute);
 app.listen(PORT, ()=> console.log(`server has started at PORT ${PORT}`)) 
