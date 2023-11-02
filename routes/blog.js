@@ -46,6 +46,8 @@ router.post("/comment/:blogId", async (req, res) => {
   return res.redirect(`/blog/x/${req.params.blogId}`);
 });
 
+// upload.single("coverImage") -- middleware 
+
 router.post("/", upload.single("coverImage"), async (req, res) => {
   const { title, body } = req.body;
   const blog = await Blog.create({
