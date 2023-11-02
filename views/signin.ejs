@@ -35,7 +35,35 @@
           </div>
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-        <a href="/user/forgot-password" class="btn btn-link">Forgot Password</a>
+        <a href="#" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot Password</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forgotPasswordModalLabel">Forgot Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p style="color: rgb(0, 0, 0);">Please enter your email address to reset your password:</p>
+          <form action="http://localhost:5000/password-reset/" method="post">
+            <div class="mb-3">
+              <label for="emailInput" class="form-label">Email address</label>
+              <input
+                type="email"
+                name="email"
+                class="form-control"
+                id="emailInput"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Reset Password</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>

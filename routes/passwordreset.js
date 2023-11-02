@@ -1,23 +1,20 @@
 const router = require("express").Router();
-const { User } = require("../models/user");
+const User = require("../models/user");
 const Token = require("../models/token");
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
 const Joi = require("joi");
+const { createHmac, randomBytes } = require("crypto");
 const passwordComplexity = require("joi-password-complexity");
 const bcrypt = require("bcrypt");
 
 // send password link
 router.post("/", async (req, res) => {
 	try {
-		const emailSchema = Joi.object({
-			email: Joi.string().email().required().label("Email"),
-		});
-		const { error } = emailSchema.validate(req.body);
-		if (error)
-			return res.status(400).send({ message: error.details[0].message });
-
-		let user = await User.findOne({ email: req.body.email });
+		const { email} = req.body;
+		console.log(req.body);
+		const user = await User.findOne({ email });
+		console.log(user);
 		if (!user)
 			return res
 				.status(409)
@@ -33,7 +30,6 @@ router.post("/", async (req, res) => {
 
 		const url = `${process.env.BASE_URL}password-reset/${user._id}/${token.token}/`;
 		await sendEmail(user.email, "Password Reset", url);
-
 		res
 			.status(200)
 			.send({ message: "Password reset link sent to your email account" });
@@ -53,8 +49,8 @@ router.get("/:id/:token", async (req, res) => {
 			token: req.params.token,
 		});
 		if (!token) return res.status(400).send({ message: "Invalid link" });
-
-		res.status(200).send("Valid Url");
+		//render reset password page
+		return res.status(200).render("resetpassword", { id: req.params.id, token: req.params.token });		// res.status(200).send("Valid Url");
 	} catch (error) {
 		res.status(500).send({ message: "Internal Server Error" });
 	}
@@ -63,13 +59,7 @@ router.get("/:id/:token", async (req, res) => {
 //  set new password
 router.post("/:id/:token", async (req, res) => {
 	try {
-		const passwordSchema = Joi.object({
-			password: passwordComplexity().required().label("Password"),
-		});
-		const { error } = passwordSchema.validate(req.body);
-		if (error)
-			return res.status(400).send({ message: error.details[0].message });
-
+		const {password} = req.body;
 		const user = await User.findOne({ _id: req.params.id });
 		if (!user) return res.status(400).send({ message: "Invalid link" });
 
@@ -80,16 +70,19 @@ router.post("/:id/:token", async (req, res) => {
 		if (!token) return res.status(400).send({ message: "Invalid link" });
 
 		if (!user.verified) user.verified = true;
-
-		const salt = await bcrypt.genSalt(Number(process.env.SALT));
-		const hashPassword = await bcrypt.hash(req.body.password, salt);
-
-		user.password = hashPassword;
-		await user.save();
-		await token.remove();
-
-		res.status(200).send({ message: "Password reset successfully" });
+		console.log("hi")
+		const salt = randomBytes(16).toString();
+		console.log("hi")
+		const hashPassword = createHmac("sha256", salt);
+		console.log("hi")
+		await user.updateOne({ _id: user._id }, { password: hashPassword });
+		console.log("hi")
+		await Token.deleteOne({ userId: req.params.id });
+		console.log("hi")	
+		//redirect to sign in page
+		return res.redirect(`/user/signin/`);
 	} catch (error) {
+		console.log(error);
 		res.status(500).send({ message: "Internal Server Error" });
 	}
 });
