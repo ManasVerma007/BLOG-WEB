@@ -21,25 +21,94 @@
   <%- include('./partials/nav') %>
 
   <div class="container">
-    <form action="/blog/x" method="post" enctype="multipart/form-data">
+    <form action="/blog/x" method="POST" enctype="multipart/form-data">
       <div class="mb-3">
-        <label for="coverImage" class="form-label">Cover Image</label>
-        <input type="file" class="form-control" id="coverImage" name="coverImage" aria-describedby="coverImage" />
+        <label for="photo" class="form-label">Cover Image</label>
+        <input
+          type="file"
+          class="form-control"
+          id="photo"
+          name="photo"
+          aria-describedby="photo"
+        />
       </div>
+      <img id="uploadedImage" src="" alt="Uploaded Image" style="max-width: 100%;" />
+      <button id="removeImage" class ="btn btn-primary "style="display: none;">Remove Image</button> <!-- Initially hidden -->
+
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
-        <input type="text" class="form-control" id="title" name="title" placeholder="Enter the title here." aria-describedby="title" />
+        <input
+          type="text"
+          class="form-control"
+          id="title"
+          name="title"
+          placeholder="Enter the title here."
+          aria-describedby="title"
+        />
       </div>
       <div class="mb-3">
-        <label for="body" class="form-label">Body</label>
-        <textarea name="body" class="form-control" id="body" rows="6" placeholder="Enter the Blog here."></textarea>
+        <label for ="body" class="form-label">Body</label>
+        <textarea
+          name="body"
+          class="form-control"
+          id="body"
+          rows="6"
+          placeholder="Enter the Blog here."
+        ></textarea>
       </div>
       <div class="mb-3">
-        <button class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
       </div>
     </form>
   </div>
 
   <%- include('./partials/scripts') %>
+
+  <script>
+    // Function to update the uploaded image
+    function updateImagePreview(url) {
+      const imgElement = document.getElementById('uploadedImage');
+      const removeButton = document.getElementById('removeImage');
+  
+      if (url) {
+        imgElement.src = url;
+        removeButton.style.display = 'block'; // Display the remove button
+      } else {
+        imgElement.src = '';
+        removeButton.style.display = 'none'; // Hide the remove button
+      }
+    }
+  
+    // Add an event listener to the file input
+    const fileInput = document.getElementById('photo');
+    fileInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+  
+      // Check if a file is selected
+      if (file) {
+        // Read the file and update the image preview
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          updateImagePreview(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // No file selected, clear the image preview
+        updateImagePreview('');
+      }
+    });
+  
+    // Add a click event to the remove button
+    const removeButton = document.getElementById('removeImage');
+    removeButton.addEventListener('click', (event) => {
+      event.preventDefault(); // Prevent form submission
+      const fileInput = document.getElementById('photo');
+      fileInput.value = ''; // Clear the file input
+      updateImagePreview(''); // Clear the image preview
+    });
+
+    
+  </script>
+  
 </body>
 </html>

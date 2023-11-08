@@ -16,13 +16,21 @@
           <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="<%= blog.title %> Cover Image" />
           <div class="card-body">
             <h5 class="card-title"><%= blog.title %></h5>
-            <a href="/blog/x/<%= blog._id %>" class="btn btn-primary">View</a>
+            <div class="d-flex justify-content-between align-items-center">
+              <a href="/blog/x/<%= blog._id %>" class="btn btn-primary">View</a>
+              <form action="http://localhost:5000/blog/x/delete/<%= blog._id %>" method="POST">
+                <input type="hidden" name="_method" value="DELETE">
+                <button class="btn btn-danger" type="submit">Delete</button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
       <% }) %>
     </div>
   </div>
+  
+  
 
   <%- include('./partials/scripts') %>
 </body>

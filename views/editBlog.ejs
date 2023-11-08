@@ -1,45 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <%- include('./partials/head') %>
-  <title>Add New Blog</title>
-  <style>
-    body {
-      background-color: #343a40; /* Dark background color */
-      color: #fff; /* Text color */
-    }
-    .container {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      margin-top: 50px;
-    }
-  </style>
-</head>
-<body>
-  <%- include('./partials/nav') %>
+  <head>
+    <%- include('./partials/head') %>
+    <title>Edit Blog</title>
+    <style>
+      body {
+        background-color: #343a40; /* Dark background color */
+        color: #fff; /* Text color */
+      }
+      .container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-top: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('./partials/nav') %>
 
-  <div class="container">
-    <form action="/blog/x/<%= blog._id %>/edit" method="post" enctype="multipart/form-data">
-      <div class="mb-3">
-        <label for="coverImage" class="form-label">Cover Image</label>
-        <input type="file" class="form-control" id="coverImage" name="coverImage" aria-describedby="coverImage" />
-      </div>
-      <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
-        <input type="text" class="form-control" id="title" name="title" placeholder="Enter the title here." aria-describedby="title" />
-      </div>
-      <div class="mb-3">
-        <label for="body" class="form-label">Body</label>
-        <textarea name="body" class="form-control" id="body" rows="6" placeholder="Enter the Blog here."></textarea>
-      </div>
-      <div class="mb-3">
-        <button class="btn btn-primary">Submit</button>
-      </div>
-    </form>
-  </div>
+    <div class="container">
+      <form
+        action="/blog/x/<%= blog._id %>/edit"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <div class="mb-3">
+          <label for="photo" class="form-label">Cover Image</label>
+          <% if (blog.coverImageURL) { %>
+          <!-- Display the saved image if available -->
+          <img
+            id="imagePreview"
+            src="<%= blog.coverImageURL %>"
+            alt="Uploaded Image"
+          />
+          <br />
+          <input type="checkbox" id="removeImage" name="removeImage" />
+          <label for="removeImage" style="color: black"
+            >Remove previous Image</label
+          >
+          <% } %>
+          <input
+            type="file"
+            class="form-control"
+            id="photo"
+            name="photo"
+            aria-describedby="photo"
+          />
+          <img
+            id="imagePreview"
+            src=""
+            alt="Uploaded Image"
+            style="max-width: 100%; display: none"
+          />
+          <br />
+          <button
+            id="removeImageButton"
+            class="btn btn-primary"
+            style="display: none"
+          >
+            Remove Image
+          </button>
+          <!-- Initially hidden -->
+        </div>
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            placeholder="Enter the title here."
+            aria-describedby="title"
+            value="<%= blog.title %>"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="body" class="form-label">Body</label>
+          <textarea
+            name="body"
+            class="form-control"
+            id="body"
+            rows="6"
+            placeholder="Enter the Blog here."
+          >
+<%= blog.body %></textarea
+          >
+        </div>
+        <div class="mb-3">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
 
-  <%- include('./partials/scripts') %>
-</body>
+    <%- include('./partials/scripts') %>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize the Remove Image checkbox
+        const removeImageCheckbox = document.getElementById("removeImage");
+        removeImageCheckbox.checked = false;
+
+        // Include the "removeImage" value in the form submission when Submit is clicked
+        const form = document.querySelector("form");
+        const submitButton = document.querySelector('button[type="submit"]');
+        submitButton.addEventListener("click", function () {
+          const removeImageInput = document.createElement("input");
+          removeImageInput.type = "hidden";
+          removeImageInput.name = "removeImage";
+          removeImageInput.value = removeImageCheckbox.checked
+            ? "true"
+            : "false";
+          form.appendChild(removeImageInput);
+        });
+
+        function updateImagePreview(url) {
+          const imgElement = document.getElementById("imagePreview");
+          const removeButton = document.getElementById("removeImageButton");
+
+          if (url) {
+            imgElement.src = url;
+            removeButton.style.display = "block"; // Display the remove button
+          } else {
+            imgElement.src = "";
+            removeButton.style.display = "none"; // Hide the remove button
+          }
+        }
+
+        // Add an event listener to the file input
+        const fileInput = document.getElementById("photo");
+        fileInput.addEventListener("change", (event) => {
+          const file = event.target.files[0];
+
+          // Check if a file is selected
+          if (file) {
+            // Read the file and update the image preview
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              updateImagePreview(e.target.result);
+            };
+            reader.readAsDataURL(file);
+          } else {
+            // No file selected, clear the image preview
+            updateImagePreview("");
+          }
+        });
+
+        // Add a click event to the remove button
+        const removeButton = document.getElementById("removeImageButton");
+        removeButton.addEventListener("click", (event) => {
+          event.preventDefault(); // Prevent form submission
+          const fileInput = document.getElementById("photo");
+          fileInput.value = ""; // Clear the file input
+          updateImagePreview(""); // Clear the image preview
+        });
+      });
+    </script>
+  </body>
 </html>
