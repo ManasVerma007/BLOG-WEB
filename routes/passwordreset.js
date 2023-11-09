@@ -59,32 +59,36 @@ router.get("/:id/:token", async (req, res) => {
 //  set new password
 router.post("/:id/:token", async (req, res) => {
 	try {
-		const {password} = req.body;
-		const user = await User.findOne({ _id: req.params.id });
-		if (!user) return res.status(400).send({ message: "Invalid link" });
+	  const { password } = req.body;
+	  console.log(req.body);
+	  const user = await User.findOne({ _id: req.params.id });
+	  console.log(user);
+	  if (!user) return res.status(400).send({ message: "Invalid link" });
+  
+	  const token = await Token.findOne({
+		userId: user._id,
+		token: req.params.token,
+	  });
+	  if (!token) return res.status(400).send({ message: "Invalid link" });
+  
+	  if (!user.verified) user.verified = true;
+  
+	  const salt = randomBytes(16).toString();
+  
+	  const hash = createHmac("sha256", salt);
+	  hash.update(password);
+	  const hashPassword = hash.digest('hex');
+	  console.log(hashPassword);
+	  await user.updateOne({ password: hashPassword,salt: salt });
 
-		const token = await Token.findOne({
-			userId: user._id,
-			token: req.params.token,
-		});
-		if (!token) return res.status(400).send({ message: "Invalid link" });
-
-		if (!user.verified) user.verified = true;
-		console.log("hi")
-		const salt = randomBytes(16).toString();
-		console.log("hi")
-		const hashPassword = createHmac("sha256", salt);
-		console.log("hi")
-		await user.updateOne({ _id: user._id }, { password: hashPassword });
-		console.log("hi")
-		await Token.deleteOne({ userId: req.params.id });
-		console.log("hi")	
-		//redirect to sign in page
-		return res.redirect(`/user/signin/`);
+	  await Token.deleteOne({ userId: req.params.id });
+  
+	  //redirect to sign in page
+	  return res.redirect(`/user/signin/`);
 	} catch (error) {
-		console.log(error);
-		res.status(500).send({ message: "Internal Server Error" });
+	  console.log(error);
+	  res.status(500).send({ message: "Internal Server Error" });
 	}
-});
+  });
 
 module.exports = router;
