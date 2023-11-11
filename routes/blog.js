@@ -166,7 +166,7 @@ router.post("/delete/:id", async (req, res) => {
       await cloudinary.uploader.destroy(blog.coverImageURL);
     }
     await Blog.findByIdAndDelete(req.params.id);
-    return res.redirect("http://localhost:5000/blog/x/myblogs/one");
+    return res.redirect("/blog/x/myblogs/one");
   } catch (error) {
     console.error(error);
     return res.status(500).send("Internal Server Error");
