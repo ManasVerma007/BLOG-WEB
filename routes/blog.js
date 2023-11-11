@@ -3,9 +3,8 @@ const { Router } = require("express");
 const path = require("path");
 const Blog = require("../models/blog");
 const Comment = require("../models/comment");
-const sharp = require("sharp");
-const fs = require("fs");
-
+// const sharp = require("sharp");
+// const fs = require("fs");
 const router = Router();
 
 require("dotenv").config();

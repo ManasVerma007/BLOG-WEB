@@ -6,7 +6,7 @@ const sendEmail = require("../utils/sendEmail");
 const Joi = require("joi");
 const { createHmac, randomBytes } = require("crypto");
 const passwordComplexity = require("joi-password-complexity");
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 
 // send password link
 router.post("/", async (req, res) => {
