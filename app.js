@@ -24,9 +24,10 @@ mongoose
 .then((e)=>{
     console.log("Mongodb Connected")
 })
-// app.use(fileupload({
-//   useTempFiles:true
-// }));
+.catch((e)=>{
+    console.log(e)
+})
+
 app.set("view engine", "ejs")
 app.set("views", path.resolve("./views")) 
 app.use(cookieParser());
@@ -45,5 +46,5 @@ app.get("/", async (req, res) => {
 app.use(express.urlencoded({ extended: false }));
 app.use("/user", userRoute);
 app.use("/blog/x", blogRoute);
-app.use("/password-reset", passwordResetRoutes);
+app.use("/password-reset/pass", passwordResetRoutes);
 app.listen(PORT, ()=> console.log(`server has started at PORT ${PORT}`)) 
